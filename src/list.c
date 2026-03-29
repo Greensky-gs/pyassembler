@@ -1,0 +1,56 @@
+#include <stdlib.h>
+#include "tools.h"
+#include "list.h"
+
+chained_cell create_cell(char * value) {
+	chained_cell cell;
+	if ((cell = malloc(sizeof(struct schained_cell))) == NULL) return NULL;
+
+	cell->next = NULL;
+	cell->value = value;
+
+	return cell;
+}
+void destroy_list(chained_cell cell) {
+	while (cell != NULL) {
+		free(cell->value);
+		chained_cell temp = cell->next;
+
+		free(cell);
+		cell = temp;
+	}
+}
+int exists_list(chained_cell cell, char * value) {
+	while (cell != NULL) {
+		if (streq(value, cell->value)) return 1;
+		cell = cell->next;
+	}
+	return 0;
+}
+int append_list(chained_cell * cell, char * value) {
+	chained_cell new;
+	if ((new = create_cell(value)) == NULL) return 0;
+
+	if (*cell == NULL) {
+		*cell = new;
+		return 1;
+	}
+
+	chained_cell current = *cell;
+	chained_cell next = current->next;
+	while (next != NULL) {
+		current = next;
+		next = current->next;
+	}
+
+	current->next = new;
+
+	return 1;
+}
+
+void foreach_list(chained_cell cell, void callback(chained_cell)) {
+	while (cell != NULL) {
+		callback(cell);
+		cell = cell->next;
+	}
+}
