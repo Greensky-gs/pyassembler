@@ -86,3 +86,86 @@ chained_cell reader_scan_names(char * entry) {
 
 	return list;
 }
+
+void import_names_callback(char * path, void * pointer) {
+	chained_cell * listp = (chained_cell *)pointer;
+
+	FILE * stream;
+	if ((stream = fopen(path, "rt")) == NULL) return;
+
+	char buffer[BUFSIZ] = {0};
+	while (fgets(buffer, BUFSIZ - 1, stream) != NULL) {
+		char * copy;
+		int size;
+		char ** words;
+		
+		if ((words = extract_words(buffer, &size, &copy)) == NULL) continue;
+
+		int i = 0;
+		while (i < size - 1) {
+			if (streq(words[i], "from")) {
+				char * word = words[i + 1];
+				if (listp == NULL || !exists_list(*listp, word)) {
+					char * value;
+					int totalsize = strlen(word) + strlen(buffer) + 2; // Boar thechnique, we will concatenate two strings in one malloc, with 2 \0
+					if ((value = malloc(totalsize)) == NULL) break;
+
+					int i = 0;
+					while (word[i] != 0) {
+						value[i] = word[i];
+						i++;
+					}
+					value[i] = 0;
+					i++;
+
+					int j = 0;
+					while (buffer[j] != 0) {
+						value[i + j] = buffer[j];
+						j++;
+					}
+					value[j + i] = 0;
+
+					append_list(listp, value);
+				}
+				break;
+			}
+			i++;
+		}
+
+		free(copy);
+		free(words);
+	}
+
+	fclose(stream);
+}
+
+chained_cell get_all_import_names(char * inputpath) {
+	chained_cell list = NULL;
+
+	recursive_scan(inputpath, &list, import_names_callback);
+
+	return list;
+}
+
+struct perform_datastruct {
+	chained_cell * names;
+	chained_cell * imports;
+};
+void perform_callback(char * path, void * pointer) {
+	struct perform_datastruct * data = (struct perform_datastruct *)pointer;
+
+	import_names_callback(path, data->imports);
+	scan_names_callback(path, data->names);
+}
+
+int perform_scans(char * path, chained_cell * names, chained_cell * imports) {
+	struct perform_datastruct data = {
+		names,
+		imports
+	};
+
+	recursive_scan(path, &data, perform_callback);
+
+	return 0;
+}
+

@@ -1,5 +1,5 @@
-#include "assembler.h"
 #include "list.h"
+#include "assembler.h"
 #include "reader.h"
 #include "tools.h"
 #include <fcntl.h>
@@ -38,12 +38,24 @@ void write_callback(char * fullpath, void * pointer) {
 	}
 
 	write_header(datas->outputfd, fullpath);
-	copy_content(datas->outputfd, stream, datas->names, datas->options->max_consecutive_newlines);
+	copy_content(datas->outputfd, stream, datas->options->max_consecutive_newlines);
 	write_footer(datas->outputfd, fullpath);
 
 	fclose(stream);
 }
 
+void filter_lists(chained_cell * imports, chained_cell names) {
+	chained_cell curr = *imports;
+
+	while (curr != NULL) {
+		if (exists_list(names, curr->value)) remove_list(imports, curr->value);
+		curr = curr->next;
+	}
+}
+
+void display(chained_cell cell) {
+	printf("%s\n", cell->value);
+}
 int assemble(char * inputdirname, char * outputfilename, struct assembler_options options) {
 	struct stat sb;
 	if (lstat(inputdirname, &sb) == -1) {
@@ -61,7 +73,10 @@ int assemble(char * inputdirname, char * outputfilename, struct assembler_option
 		return 1;
 	};
 
-	chained_cell names = reader_scan_names(inputdirname);
+	chained_cell names = NULL, imports = NULL;
+
+	perform_scans(inputdirname, &names, &imports);
+	filter_lists(&imports, names);
 
 	struct assembler_datas data = {
 		names,
@@ -70,13 +85,18 @@ int assemble(char * inputdirname, char * outputfilename, struct assembler_option
 		&options
 	};
 
+	write_imports_list(outputfd, imports);
+
 	recursive_scan(inputdirname, &data, write_callback);
 
 	if (data.fails_count > 0) {
 		printf("\x1b[31ERROR\x1b[0m An error occured during copying. Aborting.\n");
 		return 1;
 	}
+	destroy_list(imports);
 	destroy_list(names);
+
+	printf("Wrote to \x1b[33m%s\x1b[0m\n", outputfilename);
 
 	close(outputfd);
 	return 0;

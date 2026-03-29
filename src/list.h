@@ -11,6 +11,8 @@ extern chained_cell create_cell(char *);
 extern void destroy_list(chained_cell);
 extern int append_list(chained_cell *, char *);
 extern int exists_list(chained_cell, char *);
+extern int remove_list(chained_cell *, char *);
+extern int size_list(chained_cell);
 
 extern void foreach_list(chained_cell, void callback(chained_cell));
 

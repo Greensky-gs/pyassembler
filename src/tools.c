@@ -36,6 +36,19 @@ int write_footer(int fd_dest, char * name) {
 	free(temp);
 	return 0;
 }
+int write_imports_start(int fd_dest) {
+	char text[] = "# PyAssembler::imports::start\n";
+
+	write(fd_dest, text, strlen(text));
+
+	return 0;
+}
+int write_imports_end(int fd_dest) {
+	char text[] = "# PyAssembler::imports::end\n";
+
+	write(fd_dest, text, strlen(text));
+	return 0;
+}
 
 int is_path_nav(char * path) {
 	if (path[0] == 0) return 0;
@@ -133,7 +146,7 @@ static char * find_import(char ** words, int size) {
 	return NULL;
 }
 
-int copy_content(int fd_dest, FILE * input, chained_cell imports, int max_consec) {
+int copy_content(int fd_dest, FILE * input, int max_consec) {
 	char line[BUFSIZ];
 
 	int consecutives = 0;
@@ -144,7 +157,7 @@ int copy_content(int fd_dest, FILE * input, chained_cell imports, int max_consec
 		if ((words = extract_words(line, &size, &copy)) == NULL) continue;
 
 		char * importname;
-		if ((importname = find_import(words, size)) != NULL && exists_list(imports, importname)) {
+		if ((importname = find_import(words, size)) != NULL) {
 			free(copy);
 			free(words);
 			continue;
@@ -212,4 +225,33 @@ int output_prelude(char * dest, char ** ref) {
 	}
 	*slash = '/';
 	return 0;
+}
+
+int write_imports_list(int fd, chained_cell list) {
+	if (list == NULL) {
+		char text[] = "# PyAssembler::imports  NO IMPORTS\n";
+		write(fd, text, strlen(text));
+		return 0;	
+	}
+
+	write_imports_start(fd);
+
+	chained_cell curr = list;
+	char newline = '\n';
+	while (curr != NULL) {
+		char * line = next_zero(curr->value);
+		write(fd, line, strlen(line));
+		write(fd, &newline, 1);
+
+		curr = curr->next;
+	}
+	
+	write_imports_end(fd);
+	return 0;
+}
+
+char * next_zero(char * a) {
+	int i = 0;
+	while (a[i++] != 0);
+	return a + i;
 }

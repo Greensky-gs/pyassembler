@@ -19,6 +19,14 @@ Then you can do :
 3. `make cleanbuild` to build without sanatizers and flags. Just run `make` to run with them if you want
 4. Executable is produced in `bin/main.uwu`. Feel free to move it where you please.
 
+## Developpement
+
+This is still in developpement, for now there are a few things to do :
+
+- [X] Having a working assembler
+- [ ] A man page entry ? Or proper documentation ?
+- [ ] Actually handle errors
+
 ## Usage
 
 Just run `pyassembler directory` to take all python files and assemble them.
