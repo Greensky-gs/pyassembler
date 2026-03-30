@@ -37,9 +37,9 @@ void write_callback(char * fullpath, void * pointer) {
 		fullpath = slash + 1;
 	}
 
-	write_header(datas->outputfd, fullpath);
+	if (datas->options->print_comments == 1) write_header(datas->outputfd, fullpath);
 	copy_content(datas->outputfd, stream, datas->options->max_consecutive_newlines);
-	write_footer(datas->outputfd, fullpath);
+	if (datas->options->print_comments == 1) write_footer(datas->outputfd, fullpath);
 
 	fclose(stream);
 }
@@ -85,7 +85,9 @@ int assemble(char * inputdirname, char * outputfilename, struct assembler_option
 		&options
 	};
 
+	if (options.print_comments == 1) write_imports_start(outputfd);
 	write_imports_list(outputfd, imports);
+	if (options.print_comments == 1) write_imports_end(outputfd);
 
 	recursive_scan(inputdirname, &data, write_callback);
 

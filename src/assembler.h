@@ -5,6 +5,7 @@
 struct assembler_options {
 	int max_consecutive_newlines;
 	int fullpaths;
+	char print_comments;
 };
 
 extern int assemble(char * inputdirname, char * outputname, struct assembler_options);

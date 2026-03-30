@@ -234,8 +234,6 @@ int write_imports_list(int fd, chained_cell list) {
 		return 0;	
 	}
 
-	write_imports_start(fd);
-
 	chained_cell curr = list;
 	char newline = '\n';
 	while (curr != NULL) {
@@ -246,7 +244,6 @@ int write_imports_list(int fd, chained_cell list) {
 		curr = curr->next;
 	}
 	
-	write_imports_end(fd);
 	return 0;
 }
 
