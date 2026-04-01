@@ -8,7 +8,7 @@
 #include "tools.h"
 
 void help_page(char * name) {
-	printf("Usage: \x1b[90m%s <input directory> -o output/file [OPTIONS]\x1b[0m\n  Options are : \n    --max-newlines <int> : number of consecutives newlines to include in the final py file\n     --no-comments : Don't comment the output\n", name);
+	printf("Usage: \x1b[90m%s <input directory> -o output/file [OPTIONS]\x1b[0m\n  Options are : \n    --max-newlines <int> : number of consecutives newlines to include in the final py file\n    --no-comments : Don't comment the output\n    --last-file <FILE> : last file to assemble, if found\n", name);
 }
 
 int main(int argc, char * argv[]) {
@@ -22,6 +22,7 @@ int main(int argc, char * argv[]) {
 	opts.print_comments = in_args(argc, argv, "--no-comments") ? 0 : 1;
 	opts.fullpaths = in_args(argc, argv, "--full");
 	opts.max_consecutive_newlines = 1;
+	opts.last_file = arg_value(argc, argv, "--last-file");
 
 	if (get_int(argc, argv, "--max-newlines", &(opts.max_consecutive_newlines)) == 0) {
 		printf("Invalid number for \x1b[90m--max-newlines\x1b[0m : integer expected\n");

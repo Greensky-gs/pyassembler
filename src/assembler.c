@@ -3,6 +3,8 @@
 #include "reader.h"
 #include "tools.h"
 #include <fcntl.h>
+#include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <sys/stat.h>
 
@@ -10,6 +12,7 @@ struct assembler_datas {
 	chained_cell names;
 	int outputfd;
 	int fails_count;
+	int found_last;
 
 	struct assembler_options * options;
 };
@@ -18,6 +21,11 @@ void write_callback(char * fullpath, void * pointer) {
 	if (!py_file(fullpath)) return;
 
 	struct assembler_datas * datas = (struct assembler_datas *)pointer;
+
+	if (datas->options->last_file != 0 && streq(fullpath, datas->options->last_file) && !datas->found_last) {
+		datas->found_last = 1;
+		return;
+	}
 
 	FILE * stream;
 	if ((stream = fopen(fullpath, "rt")) == NULL) {
@@ -78,9 +86,23 @@ int assemble(char * inputdirname, char * outputfilename, struct assembler_option
 	perform_scans(inputdirname, &names, &imports);
 	filter_lists(&imports, names);
 
+	if (options.last_file != NULL) {
+		char * fullpath;
+		if ((fullpath = calloc(strlen(options.last_file) + strlen(inputdirname) + 2, sizeof(char))) == NULL) {
+			printf("\x1b[31mERREUR\x1b[0m allocation de mémoire\n");
+			return 1;
+		}
+
+		strcat(fullpath, inputdirname);
+		strcat(fullpath, "/");
+		strcat(fullpath, options.last_file);
+		options.last_file = fullpath;
+	}
+
 	struct assembler_datas data = {
 		names,
 		outputfd,
+		0,
 		0,
 		&options
 	};
@@ -90,6 +112,10 @@ int assemble(char * inputdirname, char * outputfilename, struct assembler_option
 	if (options.print_comments == 1) write_imports_end(outputfd);
 
 	recursive_scan(inputdirname, &data, write_callback);
+
+	if (data.found_last) write_callback(options.last_file, &data);
+
+	if (options.last_file != NULL) free(options.last_file);
 
 	if (data.fails_count > 0) {
 		printf("\x1b[31ERROR\x1b[0m An error occured during copying. Aborting.\n");
