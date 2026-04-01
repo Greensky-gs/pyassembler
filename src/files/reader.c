@@ -6,7 +6,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include "reader.h"
-#include "tools.h"
+#include "../aux/tools.h"
 
 int py_file(char * path) {
 	int i = 0;

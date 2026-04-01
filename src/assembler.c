@@ -1,7 +1,7 @@
-#include "list.h"
 #include "assembler.h"
-#include "reader.h"
-#include "tools.h"
+#include "structs/list.h"
+#include "files/reader.h"
+#include "aux/tools.h"
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>

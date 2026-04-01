@@ -1,6 +1,6 @@
 #ifndef __TOOLS_H__
 #define __TOOLS_H__ 1
-#include "list.h"
+#include "../structs/list.h"
 #include <stdio.h>
 
 extern int write_header(int fd_dest, char * name);

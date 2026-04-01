@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "tools.h"
+#include "../aux/tools.h"
 #include "list.h"
 
 chained_cell create_cell(char * value) {

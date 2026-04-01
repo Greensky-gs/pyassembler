@@ -1,6 +1,6 @@
 #ifndef __READER_H__
 #define __READER_H__ 1
-#include "list.h"
+#include "../structs/list.h"
 
 extern int py_file(char *);
 
