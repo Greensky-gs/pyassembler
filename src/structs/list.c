@@ -38,6 +38,7 @@ int append_list(chained_cell * cell, char * value) {
 
 	chained_cell current = *cell;
 	chained_cell next = current->next;
+
 	while (next != NULL) {
 		current = next;
 		next = current->next;
@@ -72,6 +73,7 @@ int remove_list(chained_cell * list, char * target) {
 			return 1;
 		}
 		curr = curr->next;
+		previous = previous->next;
 	}
 	return 0;
 }
@@ -90,4 +92,18 @@ void foreach_list(chained_cell cell, void callback(chained_cell)) {
 		callback(cell);
 		cell = cell->next;
 	}
+}
+
+void display_list(chained_cell list) {
+	if (list == NULL) {
+		printf("[]\n");
+		return;
+	}
+
+	printf("[\n");
+	while (list != NULL) {
+		printf("    %s\n", list->value);
+		list = list->next;
+	}
+	printf("]\n");
 }

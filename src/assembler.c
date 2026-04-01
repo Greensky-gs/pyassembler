@@ -57,6 +57,7 @@ void filter_lists(chained_cell * imports, chained_cell names) {
 
 	while (curr != NULL) {
 		if (exists_list(names, curr->value)) remove_list(imports, curr->value);
+		
 		curr = curr->next;
 	}
 }

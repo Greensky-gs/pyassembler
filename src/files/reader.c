@@ -50,18 +50,24 @@ void recursive_scan(char * path, void * util_pointer, void reg_callback(char * f
 	closedir(dir);
 }
 
+struct scan_names_callback_data {
+	chained_cell * chained_list;
+	int origin_size;
+};
 void scan_names_callback(char * fullpath, void * pointer) {
 	if (!py_file(fullpath)) return;
-	chained_cell * list = (chained_cell *)pointer;
+	struct scan_names_callback_data * data = (struct scan_names_callback_data *)pointer;
+	chained_cell * list = data->chained_list;
 
 	int i = 0;
-	char * slash = fullpath;
-	while (fullpath[i] != 0) {
-		if (fullpath[i] == '/') slash = fullpath + i;
+	char * slash = fullpath + data->origin_size + 1;
+
+	while (slash[i] != 0) {
+		if (slash[i] == '/') slash[i] = '.';
 		i++;
 	}
 
-	char * filename = slash + 1;
+	char * filename = slash;
 	char * dot = filename;
 	i =  0;
 	while (filename[i] != 0) {
@@ -70,9 +76,11 @@ void scan_names_callback(char * fullpath, void * pointer) {
 	}
 
 	if (dot != filename) *dot = 0;
+
 	int size = strlen(filename);
 	char * copy;
 	if ((copy = malloc(size + 1)) == NULL) return;
+
 	strcpy(copy, filename);
 	copy[size] = 0;
 
@@ -150,18 +158,26 @@ chained_cell get_all_import_names(char * inputpath) {
 struct perform_datastruct {
 	chained_cell * names;
 	chained_cell * imports;
+
+	int originsize;
 };
 void perform_callback(char * path, void * pointer) {
 	struct perform_datastruct * data = (struct perform_datastruct *)pointer;
 
 	import_names_callback(path, data->imports);
-	scan_names_callback(path, data->names);
+
+	struct scan_names_callback_data names_data = {0};
+
+	names_data.chained_list = data->names;
+	names_data.origin_size = data->originsize;
+	scan_names_callback(path, &names_data);
 }
 
 int perform_scans(char * path, chained_cell * names, chained_cell * imports) {
 	struct perform_datastruct data = {
 		names,
-		imports
+		imports,
+		strlen(path)
 	};
 
 	recursive_scan(path, &data, perform_callback);
