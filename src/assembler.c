@@ -23,6 +23,7 @@ void write_callback(char * fullpath, void * pointer) {
 	struct assembler_datas * datas = (struct assembler_datas *)pointer;
 
 	if (datas->options->last_file != 0 && streq(fullpath, datas->options->last_file) && !datas->found_last) {
+		IF_VERBOSE(datas->options, VerboseUseless, "SCANNING", printf("Encountered last file. Ignoring for now...\n"))
 		datas->found_last = 1;
 		return;
 	}
@@ -31,6 +32,8 @@ void write_callback(char * fullpath, void * pointer) {
 	IF_VERBOSE(datas->options, VerboseInfo, "FILEOPEN", printf("Opening \x1b[33m%s\x1b[0m\n", fullpath));
 
 	if ((stream = fopen(fullpath, "rt")) == NULL) {
+		IF_VERBOSE(datas->options, VerboseCritical, "FILEOPEN", printf("Cannot open \x1b[31m%s\x1b[0m. See below for perror\n", fullpath))
+		IF_VERBOSE(datas->options, VerboseInfo, "FILEOPEN", perror("fopen"))
 		datas->fails_count++;
 		printf("\x1b[91m ERROR\x1b[0m cannot open \x1b[33m%s\x1b[0m for reading.\n", fullpath);
 		return;
@@ -48,6 +51,7 @@ void write_callback(char * fullpath, void * pointer) {
 	}
 
 	if (datas->options->print_comments == 1) write_header(datas->outputfd, fullpath);
+	IF_VERBOSE(datas->options, VerboseUseless, "FILECOPY", printf("Starting copy of \x1b[33m%s\x1b[0m\n", fullpath))
 	copy_content(datas->outputfd, stream, datas->options->max_consecutive_newlines);
 	if (datas->options->print_comments == 1) write_footer(datas->outputfd, fullpath);
 
@@ -70,6 +74,8 @@ void display(chained_cell cell) {
 int assemble(char * inputdirname, char * outputfilename, struct assembler_options options) {
 	struct stat sb;
 	if (lstat(inputdirname, &sb) == -1) {
+		IF_VERBOSE(&options, VerboseWarning, "STAT", printf("Unable to execute \x1b[93mlstat\x1b[0m. See below for perror\n"))
+		IF_VERBOSE(&options, VerboseInfo, "STAT", perror("lstat"))
 		printf("Something went wrong trying to read \x1b[33m%s\x1b[0m. Perhaps it doesn't exist\n", inputdirname);
 		return 1;
 	}
@@ -80,6 +86,8 @@ int assemble(char * inputdirname, char * outputfilename, struct assembler_option
 
 	int outputfd;
 	if ((outputfd = open(outputfilename, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IXUSR)) == -1) {
+		IF_VERBOSE(&options, VerboseWarning, "FILECREATE", printf("Failed to create/open output file \x1b[33m%s\x1b[0m. See perror result below\n", outputfilename))
+		IF_VERBOSE(&options, VerboseInfo, "FILECREATE", perror("open"))
 		printf("\x1b[31mERROR\x1b[0m cannot open \x1b[33m%s\x1b[0m for writing.\n", outputfilename);
 		return 1;
 	};
@@ -96,6 +104,8 @@ int assemble(char * inputdirname, char * outputfilename, struct assembler_option
 	if (options.last_file != NULL) {
 		char * fullpath;
 		if ((fullpath = calloc(strlen(options.last_file) + strlen(inputdirname) + 2, sizeof(char))) == NULL) {
+			IF_VERBOSE(&options, VerboseCritical, "MEMORY", printf("Was not able to allocate \x1b[31m%ld\x1b[0m. See below for perror\n", strlen(options.last_file) + strlen(inputdirname) + 2))
+			IF_VERBOSE(&options, VerboseInfo, "MEMORY", perror("malloc"))
 			printf("\x1b[31mERREUR\x1b[0m allocation de mémoire\n");
 			return 1;
 		}
@@ -120,6 +130,7 @@ int assemble(char * inputdirname, char * outputfilename, struct assembler_option
 	write_imports_list(outputfd, imports);
 	if (options.print_comments == 1) write_imports_end(outputfd);
 
+	IF_VERBOSE(&options, VerboseUseless, "RECURSION", printf("Starting recursive copy...\n"))
 	recursive_scan(inputdirname, &data, write_callback);
 
 	if (data.found_last) write_callback(options.last_file, &data);
@@ -127,6 +138,7 @@ int assemble(char * inputdirname, char * outputfilename, struct assembler_option
 	if (options.last_file != NULL) free(options.last_file);
 
 	if (data.fails_count > 0) {
+		IF_VERBOSE(&options, VerboseWarning, "FAIL", printf("Got \x1b[33m%d\x1b[0m fails\n", data.fails_count))
 		printf("\x1b[31ERROR\x1b[0m An error occured during copying. Aborting.\n");
 		return 1;
 	}
