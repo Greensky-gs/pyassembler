@@ -7,26 +7,49 @@
 #include "assembler.h"
 #include "aux/tools.h"
 
-void help_page(char * name) {
-	printf("Usage: \x1b[90m%s <input directory> -o output/file [OPTIONS]\x1b[0m\n  Options are : \n    --max-newlines <int> : number of consecutives newlines to include in the final py file\n    --no-comments : Don't comment the output\n    --last-file <FILE> : last file to assemble, if found\n", name);
+static void help_page(char * name, struct arg_input args[], int size) {
+	printf("Usage: \x1b[90m%s <input directory> [OPTIONS]\x1b[0m\n  Available options are:\n", name);
+
+	int i = 0;
+	while (i < size) {
+		printf("    \x1b[90m%-15s\x1b[0m : %s. Of type \x1b[91m", args[i].name, args[i].description);
+		switch (args[i].type) {
+			case String:
+				printf("string\x1b[0m");
+				if (args[i].str_result == NULL) printf(", no default value is provided\n");
+				else printf(", default value is set to \x1b[33m%s\x1b[0m\n", args[i].str_result);
+				break;
+			case Int:
+				printf("integer\x1b[0m, default value is set to \x1b[33m%d\x1b[0m\n", args[i].int_res);
+				break;
+			case Presence:
+				printf("toggle\x1b[0m\n");
+				break;
+		}
+
+		i++;
+	}
+
+	printf("\nPyAssembler by \x1b[90mGreensky\x1b[0m at \x1b[94mhttps://github.com/Greensky-gs/pyassembler\x1b[0m\n");
 }
 
 int main(int argc, char * argv[]) {
+	struct arg_input args_list[] = {
+		{ "-o", "Output file path", String, 0, 0, "output/main.py" },
+		{ "--no-comments", "Disable assembler comments in output file", Presence, 0, 0, NULL },
+		{ "--verbose", "Show details of compiler", Presence, 0, 0, NULL },
+		{ "-v", "Alias for --verbose", Presence, 0, 0, NULL },
+		{ "--last-file", "Last file to assemble. This file will be remembered and only put at the end", String, 0, 0, NULL },
+		{ "--max-newlines", "Max consecutives empty lines to include", Int, 0, 0, NULL },
+		{ "--fullpaths", "Show full paths in assembler comments", Presence, 0, 0, NULL }
+	};
+	int size = sizeof(args_list) / sizeof(struct arg_input);
+
 	if (argc < 2) {
-		help_page(argv[0]);
+		help_page(argv[0], args_list, size);
 		return 1;
 	}
 
-	struct arg_input args_list[] = {
-		{ "-o", String, 0, 0, "output/main.py" },
-		{ "--no-comments", Presence, 0, 0, NULL },
-		{ "--verbose", Presence, 0, 0, NULL },
-		{ "-v", Presence, 0, 0, NULL },
-		{ "--last-file", String, 0, 0, NULL },
-		{ "--max-newlines", Int, 0, 0, NULL },
-		{ "--fullpaths", Presence, 0, 0, NULL }
-	};
-	int size = sizeof(args_list) / sizeof(struct arg_input);
 	find_all(argc, argv, args_list, size);
 
 	struct assembler_options opts = {0};

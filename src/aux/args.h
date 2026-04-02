@@ -9,6 +9,7 @@ typedef enum {
 
 struct arg_input {
 	char * name; // Starting with - or --
+	char * description;
 	ArgType type;
 	int found;
 
