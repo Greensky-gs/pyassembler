@@ -19,7 +19,7 @@ struct assembler_datas {
 
 void write_callback(char * fullpath, void * pointer) {
 	if (!py_file(fullpath)) return;
-
+	
 	struct assembler_datas * datas = (struct assembler_datas *)pointer;
 
 	if (datas->options->last_file != 0 && streq(fullpath, datas->options->last_file) && !datas->found_last) {
@@ -28,6 +28,8 @@ void write_callback(char * fullpath, void * pointer) {
 	}
 
 	FILE * stream;
+	IF_VERBOSE(datas->options, VerboseInfo, "FILEOPEN", printf("Opening \x1b[33m%s\x1b[0m\n", fullpath));
+
 	if ((stream = fopen(fullpath, "rt")) == NULL) {
 		datas->fails_count++;
 		printf("\x1b[91m ERROR\x1b[0m cannot open \x1b[33m%s\x1b[0m for reading.\n", fullpath);
@@ -84,8 +86,12 @@ int assemble(char * inputdirname, char * outputfilename, struct assembler_option
 
 	chained_cell names = NULL, imports = NULL;
 
+	IF_VERBOSE(&options, VerboseInfo, "SCANNING", printf("Starting scan for imports...\n"))
 	perform_scans(inputdirname, &names, &imports);
+	IF_VERBOSE(&options, VerboseUseless, "SCANNING", printf("Found \x1b[33m%d\x1b[0m for \x1b[92mnames\x1b[0m and \x1b[33m%d\x1b[0m for \x1b[92mregular imports\x1b[0m\n", size_list(names), size_list(imports)));
+	IF_VERBOSE(&options, VerboseInfo, "SCANNING", printf("Filtering results...\n"))
 	filter_lists(&imports, names);
+	IF_VERBOSE(&options, VerboseUseless, "SCANNING", printf("Now having \x1b[33m%d\x1b[0m for \x1b[92mnames\x1b[0m and \x1b[33m%d\x1b[0m for \x1b[92mregular imports\x1b[0m\n", size_list(names), size_list(imports)));
 
 	if (options.last_file != NULL) {
 		char * fullpath;
@@ -97,6 +103,7 @@ int assemble(char * inputdirname, char * outputfilename, struct assembler_option
 		strcat(fullpath, inputdirname);
 		strcat(fullpath, "/");
 		strcat(fullpath, options.last_file);
+		IF_VERBOSE(&options, VerboseInfo, "OPTIONS", printf("found \x1b[33m%s\x1b[0m as last file to assemble\n", fullpath));
 		options.last_file = fullpath;
 	}
 
@@ -108,6 +115,7 @@ int assemble(char * inputdirname, char * outputfilename, struct assembler_option
 		&options
 	};
 
+	IF_VERBOSE(&options, VerboseUseless, "WRITING", printf("Starting to write \x1b[33m%d\x1b[0m standard imports\n", size_list(imports)))
 	if (options.print_comments == 1) write_imports_start(outputfd);
 	write_imports_list(outputfd, imports);
 	if (options.print_comments == 1) write_imports_end(outputfd);
@@ -125,7 +133,7 @@ int assemble(char * inputdirname, char * outputfilename, struct assembler_option
 	destroy_list(imports);
 	destroy_list(names);
 
-	printf("Wrote to \x1b[33m%s\x1b[0m\n", outputfilename);
+	IF_VERBOSE(&options, VerboseSuccess, "WRITING", printf("Wrote to \x1b[33m%s\x1b[0m\n", outputfilename))
 
 	close(outputfd);
 	return 0;
