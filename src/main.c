@@ -41,16 +41,18 @@ int main(int argc, char * argv[]) {
 		{ "-v", "Alias for --verbose", Presence, 0, 0, NULL },
 		{ "--last-file", "Last file to assemble. This file will be remembered and only put at the end", String, 0, 0, NULL },
 		{ "--max-newlines", "Max consecutives empty lines to include", Int, 0, 0, NULL },
-		{ "--fullpaths", "Show full paths in assembler comments", Presence, 0, 0, NULL }
+		{ "--fullpaths", "Show full paths in assembler comments", Presence, 0, 0, NULL },
+		{ "--help", "Show help page", Presence, 0, 0, NULL },
+		{ "-h", "Alias for --help", Presence, 0, 0, NULL }
 	};
 	int size = sizeof(args_list) / sizeof(struct arg_input);
 
-	if (argc < 2) {
-		help_page(argv[0], args_list, size);
-		return 1;
-	}
-
 	find_all(argc, argv, args_list, size);
+
+	if (argc < 2 || (args_list[7].found || args_list[8].found)) {
+		help_page(argv[0], args_list, size);
+		return 0;
+	}
 
 	struct assembler_options opts = {0};
 
