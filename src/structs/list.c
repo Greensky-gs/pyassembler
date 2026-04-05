@@ -51,30 +51,31 @@ int append_list(chained_cell * cell, char * value) {
 int remove_list(chained_cell * list, char * target) {
 	if (*list == NULL) return 0;
 
-	if (streq((*list)->value, target)) {
+	if ((streq((*list)->value, target))) {
 		chained_cell next = (*list)->next;
 
 		free((*list)->value);
-		free((*list));
-
+		free(*list);
 		*list = next;
 		return 1;
 	}
+
+	chained_cell current = (*list)->next;
 	chained_cell previous = *list;
-	chained_cell curr = (*list)->next;
 
-	while (curr != NULL) {
-		if (streq(curr->value, target)) {
-			previous->next = curr->next;
+	while (current != NULL) {
+		if (streq(current->value, target)) {
+			previous->next = current->next;
 
-			free(curr->value);
-			free(curr);
-
+			free(current->value);
+			free(current);
 			return 1;
 		}
-		curr = curr->next;
-		previous = previous->next;
+
+		previous = current;
+		current = current->next;
 	}
+	
 	return 0;
 }
 int size_list(chained_cell cell) {

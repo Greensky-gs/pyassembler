@@ -49,7 +49,8 @@ launch:
 	./$(BIN_DIR)/$(NAME)
 
 cleanbuild:
-	make FLAGS= DISABLE_VERBOSE=$(DISABLE_VERBOSE)
+	make clean
+	make FLAGS= SANTS= DISABLE_VERBOSE=$(DISABLE_VERBOSE)
 
 full:
 	make clean

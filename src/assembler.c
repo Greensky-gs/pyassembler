@@ -62,9 +62,10 @@ void filter_lists(chained_cell * imports, chained_cell names) {
 	chained_cell curr = *imports;
 
 	while (curr != NULL) {
+		chained_cell next = curr->next;
 		if (exists_list(names, curr->value)) remove_list(imports, curr->value);
-		
-		curr = curr->next;
+
+		curr = next;
 	}
 }
 
@@ -133,7 +134,10 @@ int assemble(char * inputdirname, char * outputfilename, struct assembler_option
 	IF_VERBOSE(&options, VerboseUseless, "RECURSION", printf("Starting recursive copy...\n"))
 	recursive_scan(inputdirname, &data, write_callback);
 
-	if (data.found_last) write_callback(options.last_file, &data);
+	if (data.found_last) {
+		IF_VERBOSE(&options, VerboseInfo, "WRITING", printf("Starting write of \x1b[91mlast file\x1b[0m...\n"))
+		write_callback(options.last_file, &data);
+	}
 
 	if (options.last_file != NULL) free(options.last_file);
 
