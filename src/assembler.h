@@ -24,6 +24,9 @@ struct assembler_options {
 	char print_comments;
 	char * last_file;
 	char verbose;
+
+	char * start_of_file;
+	char * end_of_file;
 };
 
 extern int assemble(char * inputdirname, char * outputname, struct assembler_options);

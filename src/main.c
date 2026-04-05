@@ -33,6 +33,24 @@ static void help_page(char * name, struct arg_input args[], int size) {
 	printf("\nPyAssembler by \x1b[90mGreensky\x1b[0m at \x1b[94mhttps://github.com/Greensky-gs/pyassembler\x1b[0m\n");
 }
 
+static void verbose_args(struct assembler_options * opts, struct arg_input args[], int size) {
+	if (!(opts->verbose)) return;
+
+	int i = 0;
+	char int_buffer[256] = {0};
+	while (i < size) {
+		struct arg_input arg = args[i];
+		if (arg.type == Int) sprintf(int_buffer, "%d", arg.int_res);
+
+		char * default_value;
+		if (arg.type == String) default_value = arg.str_result == NULL ? "\x1b[90mNone\x1b[0m" : arg.str_result;
+		else if (arg.type == Int) default_value = int_buffer;
+
+		IF_VERBOSE(opts, VerboseUseless, "ARGUMENTS", printf("Argument \x1b[33m%s\x1b[0m is %s. Value is : %s\n", arg.name, arg.found ? "\x1b[32mfound\x1b[0m" : "\x1b[31mnot found\x1b[0m", arg.type == Presence ? arg.found ? "Toggled" : "Disabled" : default_value))
+		i++;
+	}
+}
+
 int main(int argc, char * argv[]) {
 	struct arg_input args_list[] = {
 		{ "-o", "Output file path", String, 0, 0, "output/main.py" },
@@ -43,7 +61,9 @@ int main(int argc, char * argv[]) {
 		{ "--max-newlines", "Max consecutives empty lines to include", Int, 0, 0, NULL },
 		{ "--fullpaths", "Show full paths in assembler comments", Presence, 0, 0, NULL },
 		{ "--help", "Show help page", Presence, 0, 0, NULL },
-		{ "-h", "Alias for --help", Presence, 0, 0, NULL }
+		{ "-h", "Alias for --help", Presence, 0, 0, NULL },
+		{ "--start-of-file", "String to display in the comments instead of the default \"PyAssembler::start: \". Name of the file will be appended after", String, 0, 0, "PyAssembler::start: " },
+		{ "--end-of-file", "String to display in the comments instead of the default \"PyAssembler::end: \". Name of the file will be appended after", String, 0, 0, "PyAssembler::end: " }
 	};
 	int size = sizeof(args_list) / sizeof(struct arg_input);
 
@@ -61,6 +81,10 @@ int main(int argc, char * argv[]) {
 	opts.max_consecutive_newlines = args_list[5].int_res;
 	opts.last_file = args_list[4].str_result;
 	opts.verbose = (args_list[2].found || args_list[3].found) ? 1 : 0;
+	opts.start_of_file = args_list[9].str_result;
+	opts.end_of_file = args_list[10].str_result;
+
+	verbose_args(&opts, args_list, size);
 
 	char * output = args_list[0].str_result;
 

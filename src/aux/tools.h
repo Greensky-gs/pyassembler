@@ -3,8 +3,8 @@
 #include "../structs/list.h"
 #include <stdio.h>
 
-extern int write_header(int fd_dest, char * name);
-extern int write_footer(int fd_dest, char * name);
+extern int write_header(int fd_dest, char * name, char * prelude);
+extern int write_footer(int fd_dest, char * name, char * prelude);
 extern int write_imports_start(int fd_dest);
 extern int write_imports_end(int fd_dest);
 extern int write_imports_list(int fd_dest, chained_cell imports);

@@ -10,27 +10,25 @@
 #define COPY_CONTENT_CHUNK_SIZE 512
 #endif
 
-int write_header(int fd_dest, char * name) {
-	char text[] = "# PyAssembler::start: ";
+int write_header(int fd_dest, char * name, char * prelude) {	
 	char * temp;
 
-	int totalsize = strlen(text) + strlen(name) + 2;
+	int totalsize = strlen(prelude) + strlen(name) + 4;
 	if ((temp = malloc(totalsize + 1)) == NULL) return 1;
 
-	snprintf(temp, totalsize + 1, "%s%s\n\n", text, name);
+	snprintf(temp, totalsize + 1, "# %s%s\n\n", prelude, name);
 	write(fd_dest, temp, totalsize);
 
 	free(temp);
 	return 0;
 }
-int write_footer(int fd_dest, char * name) {
-	char text[] = "\n# PyAssembler::end: ";
+int write_footer(int fd_dest, char * name, char * prelude) {
 	char * temp;
 
-	int totalsize = strlen(text) + strlen(name) + 1;
+	int totalsize = strlen(prelude) + strlen(name) + 4;
 	if ((temp = malloc(totalsize + 1)) == NULL) return 1;
 
-	snprintf(temp, totalsize + 1, "%s%s\n", text, name);
+	snprintf(temp, totalsize + 1, "\n# %s%s\n", prelude, name);
 	write(fd_dest, temp, totalsize);
 
 	free(temp);

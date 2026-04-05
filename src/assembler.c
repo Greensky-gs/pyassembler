@@ -50,10 +50,10 @@ void write_callback(char * fullpath, void * pointer) {
 		fullpath = slash + 1;
 	}
 
-	if (datas->options->print_comments == 1) write_header(datas->outputfd, fullpath);
+	if (datas->options->print_comments == 1) write_header(datas->outputfd, fullpath, datas->options->start_of_file);
 	IF_VERBOSE(datas->options, VerboseUseless, "FILECOPY", printf("Starting copy of \x1b[33m%s\x1b[0m\n", fullpath))
 	copy_content(datas->outputfd, stream, datas->options->max_consecutive_newlines);
-	if (datas->options->print_comments == 1) write_footer(datas->outputfd, fullpath);
+	if (datas->options->print_comments == 1) write_footer(datas->outputfd, fullpath, datas->options->end_of_file);
 
 	fclose(stream);
 }
