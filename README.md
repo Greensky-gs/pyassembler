@@ -25,13 +25,24 @@ By default, `DISABLE_VERBOSE` is active. What it means, is that a macro is set f
 
 If you care about that maximum efficiency, disable this macro by running `make cleanbuild DISABLE_VERBOSE=1`
 
+### Documentation
+
+You can also create a man page for **PyAssembler**
+
+To do so, you will need `pandoc` (as well as `git` to easily get the repo content)
+
+1. If you don't have the repo, clone it `git clone https://github.com/Greensky-gs/pyassembler`
+2. Create the man page : `make manpage`. It will automatically try to copy the output into `/usr/share/man/man1`. If you don't want to, you can manually paste it anywhere you please (the copy will fail if you don't give root privileges)
+3. Run `man pyassembler`
+
 ## Developpement
 
 This is still in developpement, for now there are a few things to do :
 
 - [X] Having a working assembler
-- [ ] A man page entry ? Or proper documentation ?
-- [ ] Actually handle errors
+- [X] A man page entry ? Or proper documentation ?
+- [X] Actually handle errors
+- [ ] Optimise some of the work using childs processes
 
 ## Usage
 
