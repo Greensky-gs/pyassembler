@@ -56,3 +56,7 @@ full:
 	make clean
 	make
 	make launch
+
+manpage: $(BUILD_DIR) docs/pyassembler.1.md
+	pandoc -s -t man docs/pyassembler.1.md -o $(BUILD_DIR)/pyassembler.1
+	sudo cp $(BUILD_DIR)/pyassembler.1 /usr/share/man/man1/pyassembler.1
