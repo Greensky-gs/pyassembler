@@ -15,7 +15,7 @@
 #if DISABLE_VERBOSE==0
 #define IF_VERBOSE(var, mode, name, print_instruction) if ((var)->verbose) {printf("%s[%s]\x1b[0m  ", mode, name);print_instruction;}
 #else
-#define IF_VERBOSE(var, mode, name, print_instruction) {};
+#define IF_VERBOSE(var, mode, name, print_instruction)
 #endif
 
 struct assembler_options {
