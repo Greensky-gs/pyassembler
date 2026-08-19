@@ -36,6 +36,11 @@ If no output file is specified, it defaults to `./output/main.py`. The output ca
     pyassembler
     pyassembler src --no-comments -o dist/out.py --help
 
+\--version : Displays program version. This option overrides any other command, exept \--help
+
+    pyassembler --version
+    pyassembler src --no-comments --version
+
 -o *OUTPUT PATH* : Specify the output path. If the file does not exist, it will be created. If it exists, it will be truncated.
 
     pyassembler src -o dist/out.py
