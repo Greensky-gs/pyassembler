@@ -1,6 +1,6 @@
 pkgname=pyassembler
 _name=pyassembler
-pkgver=1.0.0
+pkgver=1.0.1
 pkgrel=1
 pkgdesc="A simple script that takes all python files in a given folder to assemble them in a single python file"
 arch=('x86_64' 'aarch64')
@@ -9,7 +9,7 @@ license=("unknown")
 depends=()
 makedepends=('git' 'gcc' 'make')
 optdepends=()
-source=("git+${url}.git#commit=ce225bd8bbd5725a9eb796fbdba8a069ae1d3fe0")
+source=("git+${url}.git#commit=4f3dc05493a56cb6c8a6ece89160176c275b7dba")
 options=('!debug')
 sha256sums=("SKIP")
 
