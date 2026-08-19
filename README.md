@@ -8,7 +8,16 @@ Why ? Because I have a project to do for college, and they allow only one single
 
 ## Installation
 
+### PKGBUILD (arch)
+
+```cmd
+curl -o PKGBUILD https://git.greensky.tf/Greensky/pyassembler/raw/branch/master/PKGBUILD && makepkg -sicCf
+```
+
+###  From source
+
 You will need :
+
 * `gcc` to compile the code
 * `make` to use the make file (you can do without, but you'll need to compile by hand)
 * `git` if you want to clone if from source, otherwise you can just click **Download**
@@ -19,13 +28,13 @@ Then you can do :
 3. `make cleanbuild` to build without sanatizers and flags. Just run `make` to run with them if you want
 4. Executable is produced in `bin/main.uwu`. Feel free to move it where you please.
 
-### Additional compiling options
+#### Additional compiling options
 
 By default, `DISABLE_VERBOSE` is active. What it means, is that a macro is set for when you run with `-v` or `--verbose`. However, it stills does some checks, even if running without verbosing.
 
 If you care about that maximum efficiency, disable this macro by running `make cleanbuild DISABLE_VERBOSE=1`
 
-### Documentation
+#### Documentation
 
 You can also create a man page for **PyAssembler**
 
