@@ -1,3 +1,4 @@
+#include "main.h"
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -63,7 +64,8 @@ int main(int argc, char * argv[]) {
 		{ "--help", "Show help page", Presence, 0, 0, NULL },
 		{ "-h", "Alias for --help", Presence, 0, 0, NULL },
 		{ "--start-of-file", "String to display in the comments instead of the default \"PyAssembler::start: \". Name of the file will be appended after", String, 0, 0, "PyAssembler::start: " },
-		{ "--end-of-file", "String to display in the comments instead of the default \"PyAssembler::end: \". Name of the file will be appended after", String, 0, 0, "PyAssembler::end: " }
+		{ "--end-of-file", "String to display in the comments instead of the default \"PyAssembler::end: \". Name of the file will be appended after", String, 0, 0, "PyAssembler::end: " },
+		{ "--version", "Displays program version and exits", Presence, 0, 0, NULL }
 	};
 	int size = sizeof(args_list) / sizeof(struct arg_input);
 
@@ -71,6 +73,10 @@ int main(int argc, char * argv[]) {
 
 	if (argc < 2 || (args_list[7].found || args_list[8].found)) {
 		help_page(argv[0], args_list, size);
+		return 0;
+	}
+	if (args_list[11].found) {
+		printf(PROG_VERSION "\n");
 		return 0;
 	}
 
