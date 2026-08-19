@@ -31,7 +31,7 @@ static void help_page(char * name, struct arg_input args[], int size) {
 		i++;
 	}
 
-	printf("\nPyAssembler by \x1b[90mGreensky\x1b[0m at \x1b[94mhttps://github.com/Greensky-gs/pyassembler\x1b[0m\n");
+	printf("\nPyAssembler by \x1b[90mGreensky\x1b[0m at \x1b[94mhttps://git.greensky.tf/Greensky/pyassembler\x1b[0m\n");
 }
 
 static void verbose_args(struct assembler_options * opts, struct arg_input args[], int size) {
