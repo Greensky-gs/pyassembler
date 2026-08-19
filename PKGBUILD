@@ -9,7 +9,7 @@ license=("unknown")
 depends=()
 makedepends=('git' 'gcc' 'make')
 optdepends=()
-source=("git+${url}.git")
+source=("git+${url}.git#commit=ce225bd8bbd5725a9eb796fbdba8a069ae1d3fe0")
 options=('!debug')
 sha256sums=("SKIP")
 
